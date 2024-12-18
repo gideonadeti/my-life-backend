@@ -1,10 +1,10 @@
 {
-  "name": "name",
+  "name": "my-life-backend",
   "version": "1.0.0",
-  "description": "description",
-  "main": "build/index.js",
+  "description": "Back-end for the My Life web app",
+  "main": "./build/index.js",
   "scripts": {
-    "start": "node build/index.js",
+    "start": "node ./build/index.js",
     "dev": "nodemon --watch src --exec ts-node index.ts",
     "build": "tsc"
   },
