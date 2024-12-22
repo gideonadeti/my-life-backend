@@ -1,20 +1,54 @@
 import { PrismaClient } from "@prisma/client";
 
+import colorGenerator from "../src/utils/color-generator";
+
 const prismaClient = new PrismaClient();
 
-// Exemplary usage (assumes there's a User model defined in the Prisma schema with an email field)
-export async function readUser(email: string) {
+export async function readGroups(userId: string) {
   try {
-    const user = await prismaClient.user.findUnique({
+    const groups = await prismaClient.group.findMany({
       where: {
-        email: email,
+        userId,
+      },
+      include: {
+        activities: true,
       },
     });
 
-    return user;
-  } catch (error) {
-    console.error("Error reading user:", error);
+    if (groups.length === 0) {
+      const group = await prismaClient.group.create({
+        data: {
+          userId: userId,
+          name: "All Activities",
+          isDefault: true,
+          description: "",
+          color: colorGenerator(),
+        },
+      });
 
-    throw error;
+      return [group];
+    }
+
+    return groups;
+  } catch (err) {
+    console.error("Error reading groups:", err);
+
+    throw err;
+  }
+}
+
+export async function readActivities(userId: string) {
+  try {
+    const activities = await prismaClient.activity.findMany({
+      where: {
+        userId,
+      },
+    });
+
+    return activities;
+  } catch (err) {
+    console.error("Error reading activities:", err);
+
+    throw err;
   }
 }
