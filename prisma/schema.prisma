@@ -8,16 +8,16 @@ datasource db {
 }
 
 model Activity {
-  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
   userId        String
-  groupId       String         @db.ObjectId
-  group         Group          @relation(fields: [groupId], references: [id])
+  groupId       String   @db.ObjectId
+  group         Group    @relation(fields: [groupId], references: [id])
   name          String
   description   String
   color         String
-  expectedTimes ExpectedTime[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  expectedTimes Json
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Group {
@@ -30,14 +30,4 @@ model Group {
   activities  Activity[]
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
-}
-
-model ExpectedTime {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  activityId String   @db.ObjectId
-  activity   Activity @relation(fields: [activityId], references: [id])
-  start      String
-  end        String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
 }
