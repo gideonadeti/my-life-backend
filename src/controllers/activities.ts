@@ -1,7 +1,37 @@
 import { Request, Response } from "express";
 
-import { readActivities } from "../../prisma/db";
-import { getCache, setCache } from "../lib/cache";
+import { readActivities, createActivity } from "../../prisma/db";
+import { getCache, setCache, clearCache } from "../lib/cache";
+
+export async function handleActivitiesPost(req: Request, res: Response) {
+  const { userId } = req.query;
+  const { groupId, name, description, color, expectedTimes } = req.body;
+
+  if (!userId || !groupId || !name || !color || !expectedTimes) {
+    return res.status(400).json({
+      errMsg: "userId, groupId, name, color, and expectedTimes are required",
+    });
+  }
+
+  try {
+    await createActivity(
+      userId as string,
+      groupId as string,
+      name.trim(),
+      description.trim(),
+      color,
+      expectedTimes
+    );
+    await clearCache(`/activities?userId=${userId}`);
+    await clearCache(`/groups?userId=${userId}`);
+
+    res.json({ msg: "Activity created successfully" });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ errMsg: "Something went wrong while creating activity" });
+  }
+}
 
 export async function handleActivitiesGet(req: Request, res: Response) {
   const { userId } = req.query;

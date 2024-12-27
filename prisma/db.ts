@@ -59,6 +59,32 @@ export async function readGroups(userId: string) {
   }
 }
 
+export async function createActivity(
+  userId: string,
+  groupId: string,
+  name: string,
+  description: string,
+  color: string,
+  expectedTimes: { start: string; end: string }[]
+) {
+  try {
+    await prismaClient.activity.create({
+      data: {
+        userId,
+        groupId,
+        name,
+        description,
+        color,
+        expectedTimes,
+      },
+    });
+  } catch (err) {
+    console.error("Error creating activity:", err);
+
+    throw err;
+  }
+}
+
 export async function readActivities(userId: string) {
   try {
     const activities = await prismaClient.activity.findMany({
