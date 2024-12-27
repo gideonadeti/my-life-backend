@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { readActivities, createActivity } from "../../prisma/db";
+import { readActivities, readActivity, createActivity } from "../../prisma/db";
 import { getCache, setCache, clearCache } from "../lib/cache";
 
 export async function handleActivitiesPost(req: Request, res: Response) {
@@ -14,6 +14,16 @@ export async function handleActivitiesPost(req: Request, res: Response) {
   }
 
   try {
+    const activity = await readActivity(
+      userId as string,
+      groupId as string,
+      name.trim()
+    );
+
+    if (activity) {
+      return res.status(400).json({ errMsg: "Activity already exists" });
+    }
+
     await createActivity(
       userId as string,
       groupId as string,

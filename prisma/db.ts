@@ -117,3 +117,25 @@ export async function readActivities(userId: string) {
     throw err;
   }
 }
+
+export async function readActivity(
+  userId: string,
+  groupId: string,
+  name: string
+) {
+  try {
+    const activity = await prismaClient.activity.findFirst({
+      where: {
+        userId,
+        groupId,
+        name,
+      },
+    });
+
+    return activity;
+  } catch (err) {
+    console.error("Error reading activity:", err);
+
+    throw err;
+  }
+}
