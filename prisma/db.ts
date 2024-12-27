@@ -59,6 +59,23 @@ export async function readGroups(userId: string) {
   }
 }
 
+export async function readGroup(userId: string, name: string) {
+  try {
+    const group = await prismaClient.group.findFirst({
+      where: {
+        userId,
+        name,
+      },
+    });
+
+    return group;
+  } catch (err) {
+    console.error("Error reading group:", err);
+
+    throw err;
+  }
+}
+
 export async function createActivity(
   userId: string,
   groupId: string,

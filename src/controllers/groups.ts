@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { readGroups, createGroup } from "../../prisma/db";
+import { readGroups, readGroup, createGroup } from "../../prisma/db";
 import { getCache, setCache, clearCache } from "../lib/cache";
 
 export async function handleGroupsPost(req: Request, res: Response) {
@@ -14,6 +14,12 @@ export async function handleGroupsPost(req: Request, res: Response) {
   }
 
   try {
+    const group = await readGroup(userId as string, name.trim());
+
+    if (group) {
+      return res.status(400).json({ errMsg: "Group already exists" });
+    }
+
     await createGroup(userId as string, name.trim(), description.trim(), color);
     await clearCache(`/groups?userId=${userId}`);
 
