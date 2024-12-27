@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 
 import { readGroups } from "../../prisma/db";
+import { getCache, setCache } from "../lib/cache";
 
 export async function handleGroupsGet(req: Request, res: Response) {
   const { userId } = req.query;
@@ -10,7 +11,15 @@ export async function handleGroupsGet(req: Request, res: Response) {
   }
 
   try {
+    const cachedGroups = await getCache(`/groups?userId=${userId}`);
+
+    if (cachedGroups) {
+      return res.json({ groups: cachedGroups });
+    }
+
     const groups = await readGroups(userId as string);
+
+    await setCache(`/groups?userId=${userId}`, groups);
 
     res.json({ groups });
   } catch (err) {

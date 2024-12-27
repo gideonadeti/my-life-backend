@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 
 import { readActivities } from "../../prisma/db";
+import { getCache, setCache } from "../lib/cache";
 
 export async function handleActivitiesGet(req: Request, res: Response) {
   const { userId } = req.query;
@@ -10,7 +11,15 @@ export async function handleActivitiesGet(req: Request, res: Response) {
   }
 
   try {
+    const cachedActivities = await getCache(`/activities?userId=${userId}`);
+
+    if (cachedActivities) {
+      return res.json({ activities: cachedActivities });
+    }
+
     const activities = await readActivities(userId as string);
+
+    await setCache(`/activities?userId=${userId}`, activities);
 
     res.json({ activities });
   } catch (err) {
