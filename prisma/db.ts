@@ -4,6 +4,28 @@ import colorGenerator from "../src/utils/color-generator";
 
 const prismaClient = new PrismaClient();
 
+export async function createGroup(
+  userId: string,
+  name: string,
+  description: string,
+  color: string
+) {
+  try {
+    await prismaClient.group.create({
+      data: {
+        userId,
+        name,
+        description,
+        color,
+      },
+    });
+  } catch (err) {
+    console.error("Error creating group:", err);
+
+    throw err;
+  }
+}
+
 export async function readGroups(userId: string) {
   try {
     const groups = await prismaClient.group.findMany({

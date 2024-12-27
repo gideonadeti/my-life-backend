@@ -1,7 +1,29 @@
 import { Request, Response } from "express";
 
-import { readGroups } from "../../prisma/db";
-import { getCache, setCache } from "../lib/cache";
+import { readGroups, createGroup } from "../../prisma/db";
+import { getCache, setCache, clearCache } from "../lib/cache";
+
+export async function handleGroupsPost(req: Request, res: Response) {
+  const { userId } = req.query;
+  const { name, description, color } = req.body;
+
+  if (!userId || !name || !color) {
+    return res
+      .status(400)
+      .json({ errMsg: "userId, name, and color are required" });
+  }
+
+  try {
+    await createGroup(userId as string, name.trim(), description.trim(), color);
+    await clearCache(`/groups?userId=${userId}`);
+
+    res.json({ msg: "Group created successfully" });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ errMsg: "Something went wrong while creating group" });
+  }
+}
 
 export async function handleGroupsGet(req: Request, res: Response) {
   const { userId } = req.query;
