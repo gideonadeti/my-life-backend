@@ -5,11 +5,12 @@ import { getCache, setCache, clearCache } from "../lib/cache";
 
 export async function handleActivitiesPost(req: Request, res: Response) {
   const { userId } = req.query;
-  const { groupId, name, description, color, expectedTimes } = req.body;
+  const { groupId, name, description, color, days, expectedTimes } = req.body;
 
-  if (!userId || !groupId || !name || !color || !expectedTimes) {
+  if (!userId || !groupId || !name || !color || !days || !expectedTimes) {
     return res.status(400).json({
-      errMsg: "userId, groupId, name, color, and expectedTimes are required",
+      errMsg:
+        "userId, groupId, name, color, day, and expectedTimes are required",
     });
   }
 
@@ -30,6 +31,7 @@ export async function handleActivitiesPost(req: Request, res: Response) {
       name.trim(),
       description.trim(),
       color,
+      days,
       expectedTimes
     );
     await clearCache(`/activities?userId=${userId}`);

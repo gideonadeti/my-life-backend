@@ -82,6 +82,7 @@ export async function createActivity(
   name: string,
   description: string,
   color: string,
+  days: string[],
   expectedTimes: { start: string; end: string }[]
 ) {
   try {
@@ -92,6 +93,7 @@ export async function createActivity(
         name,
         description,
         color,
+        days,
         expectedTimes,
       },
     });
